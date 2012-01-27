@@ -7,7 +7,6 @@ Configuration
 
 You can configure the authentication and server options in a YAML file
 
-config.yml
 <pre>
   host: [hostname]
   port: [port]
