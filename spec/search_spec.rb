@@ -4,7 +4,7 @@ require 'splunk-client'
 describe 'Search' do
 
   before :all do
-    @splunk = SplunkClient.new
+    @splunk = Splunk::Client.new
     search_terms = "search exception earliest=-1d@d"
     search_terms << "| regex host=\"bvt3\\w+\\d+\""
     @splunk.search(search_terms)
