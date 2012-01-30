@@ -12,15 +12,15 @@ module Splunk
 
     def post path, payload=nil
       if payload
-        @session[path].post payload, :authorization => "Splunk #{@session_key}"
+        @session.site[path].post payload, :authorization => "Splunk #{@session.key}"
       else
-        @session[path].post :authorization => "Splunk #{@session_key}"
+        @session.site[path].post :authorization => "Splunk #{@session.key}"
       end
     end
     private :post
 
     def get path
-      @session[path].get :authorization => "Splunk #{@session_key}"
+      @session.site[path].get :authorization => "Splunk #{@session.key}"
     end
     private :get
   end
@@ -29,9 +29,8 @@ module Splunk
     include SplunkHelper
     attr_accessor :id
 
-    def initialize(session, session_key, id)
+    def initialize(session, id)
       @session = session
-      @session_key = session_key
       @id = id
     end
 
@@ -55,24 +54,24 @@ module Splunk
     end
   end
 
-  class Client
+  class Session
     include SplunkHelper
-    attr_reader :session_key, :last_job_id
+    attr_reader :site, :key
 
     def initialize
       @opts = YAML::load(File.open('config.yml'))
       @base_url = "https://#{@opts['host']}:#{@opts['port']}/services"
-      @session = RestClient::Resource.new(
+      @session = self
+      @site = RestClient::Resource.new(
           @base_url,
           :timeout => 60,
           :open_timeout => 5
       )
-      @session_key = authenticate_user
-      @jobs = []
+      @key = authenticate_user
     end
 
     def authenticate_user
-      @auth = @session['/auth/login']
+      @auth = @site['/auth/login']
       doc = @auth.post :username=>@opts['username'], :password => @opts['password']
       xpath_content(doc, '//sessionKey')
     end
@@ -82,7 +81,7 @@ module Splunk
       search = CGI::escape search_parameters
       doc = post "/search/jobs", "search=#{search}"
       job_id = xpath_content(doc, '//sid')
-      Job.new(@session, @session_key, job_id)
+      Job.new(self, job_id)
     end
   end
 end
