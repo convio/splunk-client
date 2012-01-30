@@ -5,8 +5,7 @@ describe 'Search' do
 
   before :all do
     @splunk = Splunk::Session.new
-    search_terms = "search exception earliest=-1d@d"
-    search_terms << "| regex host=\"bvt3\\w+\\d+\""
+    search_terms = "search host=\"bvt3*\" site-309 exception earliest=-d@d "
     @job = @splunk.search(search_terms)
   end
 
@@ -37,6 +36,9 @@ describe 'Search' do
 
   specify 'should find exceptions' do
     @job.results.xpath("//results/result/field[@k='_raw']").size.should > 0
+#    @job.results.xpath("//results/result/field[@k='_raw']").each {|f| puts f.content; puts}
   end
+
+
 
 end
