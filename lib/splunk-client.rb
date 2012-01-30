@@ -3,7 +3,7 @@ require 'nokogiri'
 require 'yaml'
 
 class SplunkClient
-  attr_reader :session_key
+  attr_reader :session_key, :last_job_id
 
   def initialize
     @opts = YAML::load(File.open('config.yml'))
@@ -28,8 +28,8 @@ class SplunkClient
   end
   private :xml_value
 
-  def request path, payload=nil
-    puts "Request: #{path}"
+  def post path, payload=nil
+    puts "POST: #{path}"
     puts "  payload: #{payload}" if payload
     if payload
       @session[path].post payload, :authorization => "Splunk #{@session_key}"
@@ -38,18 +38,30 @@ class SplunkClient
     end
   end
 
-  def search_results(sid)
-    request "/search/jobs/#{sid}/events"
+  def get path
+    puts "GET: #{path}"
+    @session[path].get :authorization => "Splunk #{@session_key}"
+  end
+
+  def search_results(sid=last_job_id)
+    get "/search/jobs/#{sid}/results"
   end
 
   def search search_parameters
     search = CGI::escape search_parameters
-    doc = request "/search/jobs", "search=#{search}"
-    xml_value(doc, '//sid')
+    doc = post "/search/jobs", "search=#{search}"
+    @last_job_id = xml_value(doc, '//sid')
   end
 
-  def jobs
-    request '/search/jobs'
+  def status(sid=last_job_id)
+    doc = get "/search/jobs/#{sid}"
+    xml_value(doc, "//s:key[@name='isDone']")
+  end
+
+  def wait(sid=last_job_id)
+    until status == '1' do
+      sleep 3
+    end
   end
 
 end
