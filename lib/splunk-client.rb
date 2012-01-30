@@ -17,18 +17,29 @@ module Splunk
     end
 
     def status
-      doc = @session.get("/search/jobs/#{@id}")
-      @session.xpath_content(doc, "//s:key[@name='isDone']")
+      @session.get("/search/jobs/#{@id}").value_for("s:key[@name='isDone']")
     end
 
     def results
-      @session.get "/search/jobs/#{@id}/results"
+      @session.get("/search/jobs/#{@id}/results")
     end
 
     def wait(timeout=120)
       Timeout::timeout(timeout) do
         sleep 1 while running?
       end
+    end
+  end
+
+  class Result
+    attr_accessor :doc
+
+    def initialize(doc)
+      @doc = doc
+    end
+
+    def value_for(x)
+      Nokogiri::XML.parse(@doc).xpath("//#{x}").first.content
     end
   end
 
@@ -49,31 +60,29 @@ module Splunk
     def authenticate_user
       @auth = @site['/auth/login']
       doc = @auth.post :username=>@opts['username'], :password => @opts['password']
-      xpath_content(doc, '//sessionKey')
+      Result.new(doc).value_for('sessionKey')
     end
     private :authenticate_user
 
     def search search_parameters
       search = CGI::escape search_parameters
-      doc = post "/search/jobs", "search=#{search}"
-      job_id = xpath_content(doc, '//sid')
-      Job.new(self, job_id)
+      result = post "/search/jobs", "search=#{search}"
+      Job.new(self, result.value_for('sid'))
     end
 
     def post path, payload=nil
       if payload
-        @site[path].post payload, :authorization => "Splunk #{@key}"
+        doc = @site[path].post payload, :authorization => "Splunk #{@key}"
       else
-        @site[path].post :authorization => "Splunk #{@key}"
+        doc = @site[path].post :authorization => "Splunk #{@key}"
       end
+      Result.new(doc)
     end
 
     def get path
-      @site[path].get :authorization => "Splunk #{@key}"
+      doc = @site[path].get :authorization => "Splunk #{@key}"
+      Result.new(doc)
     end
 
-    def xpath_content(doc, xpath)
-      Nokogiri::XML.parse(doc).xpath(xpath).first.content
-    end
   end
 end
