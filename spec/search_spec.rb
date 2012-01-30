@@ -30,4 +30,13 @@ describe 'Search' do
     @job.wait
     @job.results.should_not be_nil
   end
+
+  specify 'results should provide xml' do
+    @job.results.doc.should_not be_nil
+  end
+
+  specify 'should find exceptions' do
+    @job.results.xpath("//results/result/field[@k='_raw']").size.should > 0
+  end
+
 end

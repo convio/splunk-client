@@ -12,7 +12,7 @@ module Splunk
     def authenticate_user
       @auth = @site['/auth/login']
       doc = @auth.post :username=>@opts['username'], :password => @opts['password']
-      Result.new(doc).value_for('sessionKey')
+      Result.new(doc).value_for('//sessionKey')
     end
 
     private :authenticate_user
@@ -20,7 +20,7 @@ module Splunk
     def search search_parameters
       search = CGI::escape search_parameters
       result = post "/search/jobs", "search=#{search}"
-      Job.new(self, result.value_for('sid'))
+      Job.new(self, result.value_for('//sid'))
     end
 
     def post path, payload=nil

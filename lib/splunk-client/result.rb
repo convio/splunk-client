@@ -6,8 +6,13 @@ module Splunk
       @doc = doc
     end
 
-    def value_for(x)
-      Nokogiri::XML.parse(@doc).xpath("//#{x}").first.content
+    def xpath(xpath)
+      Nokogiri::XML.parse(doc).xpath(xpath)
+    end
+
+    def value_for(xpath)
+      xpath(xpath).first.content
     end
   end
 end
+

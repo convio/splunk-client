@@ -12,7 +12,7 @@ module Splunk
     end
 
     def status
-      @session.get("/search/jobs/#{@id}").value_for("s:key[@name='isDone']")
+      @session.get("/search/jobs/#{@id}").value_for("//s:key[@name='isDone']")
     end
 
     def results
