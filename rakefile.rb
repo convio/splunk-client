@@ -1,4 +1,5 @@
 $LOAD_PATH.unshift File.dirname(__FILE__)
+sh 'bundle install'
 require 'bundler/setup'
 require 'rubygems'
 require 'rake/rdoctask'

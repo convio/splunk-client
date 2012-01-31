@@ -2,8 +2,9 @@ module Splunk
   class Session
     attr_reader :site, :key
 
-    def initialize(file='config.yml')
-      @opts = YAML::load(File.open(file))
+    def initialize(config='config.yml')
+      config = File.open(config) if File.exists?(config)
+      @opts = YAML::load(config)
       @base_url = "https://#{@opts['host']}:#{@opts['port']}/services"
       @site = RestClient::Resource.new(@base_url, :timeout => 60, :open_timeout => 5)
       @key = authenticate_user

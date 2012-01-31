@@ -1,7 +1,7 @@
 module Splunk
   module VERSION
     NAME = 'splunk-client'
-    STRING = '1.0'
+    STRING = '1.1'
     SUMMARY = "#{NAME}-#{STRING}"
   end
   DEPENDENCIES = [

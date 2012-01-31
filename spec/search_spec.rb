@@ -1,6 +1,22 @@
 $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), '..', 'lib'))
 require 'splunk-client'
 
+describe 'Init' do
+  specify 'read from file' do
+    lambda{
+      Splunk::Session.new(File.dirname(__FILE__) + '/config.yml')
+    }.should_not raise_error
+  end
+
+  specify 'read from string' do
+    lambda {
+      opts = File.open(File.dirname(__FILE__) + '/config.yml')
+      opts =  YAML.load(opts)
+      Splunk::Session.new(opts.to_yaml)
+    }.should_not raise_error
+  end
+end
+
 describe 'Search' do
 
   before :all do
