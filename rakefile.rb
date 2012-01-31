@@ -1,27 +1,26 @@
 $LOAD_PATH.unshift File.dirname(__FILE__)
-sh "bundle install"
 require 'bundler/setup'
 require 'rubygems'
 require 'rake/rdoctask'
 require 'rspec/core/rake_task'
 require 'rake/gempackagetask'
-require 'lib/watirmark_bvt/version'
+require 'lib/splunk-client/version'
 
 task :default => [:gem]
 
 # Specification for gem creation
 spec = Gem::Specification.new do |s|
-    s.name               = WatirmarkBVT::VERSION::NAME
-    s.version            = WatirmarkBVT::VERSION::STRING
+    s.name               = Splunk::VERSION::NAME
+    s.version            = Splunk::VERSION::STRING
     s.files              = FileList['lib/**/*'].to_a
     s.author             = 'Hugh McGowan'
     s.email              = 'hmcgowan@convio.com' 
     s.has_rdoc           = true
-    s.homepage           = 'http://twiki.convio.com/twiki/bin/view/Engineering/WatirmarkDB'
+    s.homepage           = 'http://twiki.convio.com/twiki/bin/view/Engineering'
     s.rubyforge_project  = 'none'
-    s.summary            = WatirmarkBVT::VERSION::SUMMARY
-    s.description        = "The watirmark_bvt library provides access to BVT configurations"
-    WatirmarkBVT::DEPENDENCIES.each do |gem|
+    s.summary            = Splunk::VERSION::SUMMARY
+    s.description        = "splunk-client allows a user to do simple searches against a splunk instance"
+    Splunk::DEPENDENCIES.each do |gem|
       s.add_dependency gem[0], gem[1]
     end
 end
