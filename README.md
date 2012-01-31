@@ -1,6 +1,4 @@
-SplunkClient is a very simple interface to do searches in Ruby using the Splunk API
-
-This implementation is in progress so does not yet have a complete end-to-end search...yet...
+splunk-client is a very simple interface to do searches in Ruby using the Splunk API
 
 Configuration
 -------------
@@ -18,7 +16,18 @@ Searches
 --------
 
 <pre>
-  splunk = SplunkClient.new
-  job_id = splunk.search 'search exception earliest=-1d@d'
-  ...remaining code in progress...
-</pre>  
+  # Start a session using the login credientials
+  splunk = Splunk::Session.new('config.yml')
+
+  # Create a new job. This stores the job id internally and you can wait for
+  # it or poll using job.running? You can of course spawn parallel jobs
+  job = splunk.search('exception  earliest=-d@d')
+  job.wait
+
+  # Results are returned with some NokoGiri xpath searches
+  # built in. See nokogiri's documentation for how this works.
+  results = job.results
+  puts results.doc  # raw xml
+  exceptions = results.xpath("//results/result/field[@k='_raw']")
+  exceptions.each {|e| puts e.content}
+</pre>
