@@ -1,7 +1,7 @@
-source "http://qalin.corp.convio.com:8808"
+source "http://172.20.6.101:8808"
 source "http://gemcutter.org"
 
-gem 'rspec', '~>2'
-gem 'rake', '0.8.7'
+gem 'rspec'
+gem 'rake'
 gem 'rest-client'
 gem 'nokogiri'
