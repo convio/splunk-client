@@ -1,5 +1,5 @@
-source "http://172.20.6.101:8808"
 source "http://gemcutter.org"
+source "http://gemserver.qa.convioanalyticstest.net:8808"
 
 gem 'rspec'
 gem 'rake'
